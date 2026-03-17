@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<title>Тискометр</title>
+
+<style>
+
+body{
+background:#0b1220;
+color:white;
+font-family:Arial;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.panel{
+background:#1e293b;
+padding:25px;
+border-radius:20px;
+width:340px;
+text-align:center;
+}
+
+h1{
+color:#6ee7ff;
+}
+
+.scale{
+display:flex;
+gap:4px;
+justify-content:center;
+margin:25px 0;
+}
+
+.bar{
+width:6px;
+height:30px;
+background:#333;
+border-radius:4px;
+}
+
+.number{
+font-size:60px;
+margin:10px;
+}
+
+button{
+padding:12px 30px;
+font-size:18px;
+border:none;
+border-radius:10px;
+background:#00eaff;
+}
+
+.message{
+margin-top:10px;
+font-size:20px;
+}
+
+.flash{
+animation:flash 0.15s infinite;
+}
+
+@keyframes flash{
+0%{background:white;}
+50%{background:#0b1220;}
+100%{background:white;}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="panel">
+
+<h1>🇺🇦 ТИСКОМЕТР</h1>
+
+<div class="scale" id="scale"></div>
+
+<div class="number" id="num">0</div>
+
+<button onclick="start()">Обрати</button>
+
+<div class="message" id="msg">Натисни щоб виміряти</div>
+
+</div>
+
+<script>
+
+let scale=document.getElementById("scale")
+
+for(let i=0;i<25;i++){
+let bar=document.createElement("div")
+bar.className="bar"
+scale.appendChild(bar)
+}
+
+function tick(){
+let ctx=new AudioContext()
+let osc=ctx.createOscillator()
+osc.frequency.value=250
+osc.connect(ctx.destination)
+osc.start()
+setTimeout(()=>osc.stop(),60)
+}
+
+function boom(){
+let ctx=new AudioContext()
+let osc=ctx.createOscillator()
+osc.frequency.value=80
+osc.connect(ctx.destination)
+osc.start()
+setTimeout(()=>osc.stop(),200)
+}
+
+function start(){
+
+document.body.classList.add("flash")
+
+let bars=document.querySelectorAll(".bar")
+let num=document.getElementById("num")
+let msg=document.getElementById("msg")
+
+let i=0
+let result=0
+
+let interval=setInterval(()=>{
+
+result=Math.floor(Math.random()*100)
+num.innerText=result
+
+tick()
+
+bars.forEach((b,index)=>{
+
+if(index<result/4){
+
+if(index<8) b.style.background="green"
+else if(index<16) b.style.background="yellow"
+else if(index<22) b.style.background="orange"
+else b.style.background="red"
+
+}else{
+
+b.style.background="#333"
+
+}
+
+})
+
+i++
+
+if(i>20){
+
+clearInterval(interval)
+
+document.body.classList.remove("flash")
+
+boom()
+
+if(result<=30){
+msg.innerText="Ти не тискуєш 😌"
+}
+else if(result<=70){
+msg.innerText="У тебе норм тиск 👍"
+}
+else{
+msg.innerText="Ти потужно тискуєш 💪"
+}
+
+}
+
+},120)
+
+}
+
+</script>
+
+</body>
+</html>
